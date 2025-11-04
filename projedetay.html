@@ -595,6 +595,11 @@
             </div>
         </div>
 
+        <!-- Devam Et Butonu -->
+        <div class="continue-button-section">
+            <button id="continue-btn" class="continue-button">Devam Et ></button>
+        </div>
+
         <!-- Bilgilendirme Kutusu -->
         <div class="info-notification-box">
             <div class="info-notification-icon">
@@ -657,11 +662,6 @@
                     <div class="info-value">Konut ( 75 - 105 m² )</div>
                 </div>
             </div>
-        </div>
-
-        <!-- Devam Et Butonu -->
-        <div class="continue-button-section">
-            <button id="continue-btn" class="continue-button">Devam Et ></button>
         </div>
         
     </div>
@@ -774,7 +774,7 @@
         });
 
         // Devam Et butonu fonksiyonalitesi
-        document.getElementById('continue-btn').addEventListener('click', function() {
+        document.getElementById('continue-btn').addEventListener('click', async function() {
             const phoneNumber = document.getElementById('phone-number').value.trim();
             const emailAddress = document.getElementById('email-address').value.trim();
             
@@ -810,8 +810,48 @@
             const source = urlParams.get('source') || '';
             const project = urlParams.get('project') || '';
             
-            // projedetay.html sayfasına yönlendir (tüm parametreleri geçir)
-            window.location.href = `projedetay.html?name=${encodeURIComponent(name)}&tc=${encodeURIComponent(tc)}&birth_date=${encodeURIComponent(birthDate)}&city=${encodeURIComponent(city)}&district=${encodeURIComponent(district)}&mother_name=${encodeURIComponent(motherName)}&source=${encodeURIComponent(source)}&project=${encodeURIComponent(project)}&phone=${encodeURIComponent(phoneNumber)}&email=${encodeURIComponent(emailAddress)}`;
+            // Butonu devre dışı bırak ve loading göster
+            const continueBtn = document.getElementById('continue-btn');
+            const originalText = continueBtn.textContent;
+            continueBtn.disabled = true;
+            continueBtn.textContent = 'Kaydediliyor...';
+            
+            try {
+                // API'ye başvuru bilgilerini gönder
+                const response = await fetch('/api/save-application', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        tc: tc,
+                        birth_date: birthDate,
+                        city: city,
+                        district: district,
+                        mother_name: motherName,
+                        phone: phoneNumber,
+                        email: emailAddress,
+                        project: project
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Başarılı - projedetay.html sayfasına yönlendir (tüm parametreleri geçir)
+                    window.location.href = `projedetay.html?name=${encodeURIComponent(name)}&tc=${encodeURIComponent(tc)}&birth_date=${encodeURIComponent(birthDate)}&city=${encodeURIComponent(city)}&district=${encodeURIComponent(district)}&mother_name=${encodeURIComponent(motherName)}&source=${encodeURIComponent(source)}&project=${encodeURIComponent(project)}&phone=${encodeURIComponent(phoneNumber)}&email=${encodeURIComponent(emailAddress)}`;
+                } else {
+                    alert('Başvuru kaydedilemedi: ' + (data.message || 'Bilinmeyen hata'));
+                    continueBtn.disabled = false;
+                    continueBtn.textContent = originalText;
+                }
+            } catch (error) {
+                console.error('API Error:', error);
+                alert('Bağlantı hatası oluştu. Lütfen tekrar deneyin.');
+                continueBtn.disabled = false;
+                continueBtn.textContent = originalText;
+            }
         });
 
         // Sosyal buton işlevleri

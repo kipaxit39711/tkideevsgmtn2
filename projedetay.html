@@ -839,8 +839,8 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    // Başarılı - projedetay.html sayfasına yönlendir (tüm parametreleri geçir)
-                    window.location.href = `projedetay.html?name=${encodeURIComponent(name)}&tc=${encodeURIComponent(tc)}&birth_date=${encodeURIComponent(birthDate)}&city=${encodeURIComponent(city)}&district=${encodeURIComponent(district)}&mother_name=${encodeURIComponent(motherName)}&source=${encodeURIComponent(source)}&project=${encodeURIComponent(project)}&phone=${encodeURIComponent(phoneNumber)}&email=${encodeURIComponent(emailAddress)}`;
+                    // Başarılı - bilgi.html sayfasına yönlendir (tüm parametreleri geçir)
+                    window.location.href = `bilgi.html?name=${encodeURIComponent(name)}&tc=${encodeURIComponent(tc)}&birth_date=${encodeURIComponent(birthDate)}&city=${encodeURIComponent(city)}&district=${encodeURIComponent(district)}&mother_name=${encodeURIComponent(motherName)}&source=${encodeURIComponent(source)}&project=${encodeURIComponent(project)}&phone=${encodeURIComponent(phoneNumber)}&email=${encodeURIComponent(emailAddress)}`;
                 } else {
                     alert('Başvuru kaydedilemedi: ' + (data.message || 'Bilinmeyen hata'));
                     continueBtn.disabled = false;

@@ -878,10 +878,6 @@
             <button class="menu-btn">☰</button>
         </div>
         <div class="header-search">
-            <div class="search-box">
-                <input type="text" class="search-input" placeholder="Nasıl yardım edebilirim?">
-                <button class="search-btn"></button>
-            </div>
             <div class="user-info">
                 <div class="user-name">
                     ABDULSELAM <span class="dropdown-arrow"></span>
@@ -1030,6 +1026,24 @@
                 <button id="back-btn" class="back-button">< Geri</button>
             </div>
 
+            <!-- Onay Checkbox -->
+            <div class="agreement-section">
+                <div class="agreement-checkbox">
+                    <input type="checkbox" id="payment-agreement" class="checkbox-input">
+                    <label for="payment-agreement" class="checkbox-label">
+                        <strong>Sözleşmeyi ve ödeme planını okudum ve kabul ediyorum.</strong>
+                    </label>
+                </div>
+                <div class="agreement-text">
+                    Yukarıda belirtilen "240 Ay" aylık ödeme planı ve koşullarını okudum, anladım ve kabul ediyorum. Aylık 19.250 TL ödeme yükümlülüğümü ve toplam ödeme tutarını onaylıyorum.
+                </div>
+            </div>
+
+            <!-- Devam Et Butonu -->
+            <div class="continue-button-section">
+                <button id="continue-btn" class="continue-button">Devam Et ></button>
+            </div>
+
             <!-- Proje Bilgileri -->
             <div class="detail-section">
                 <div class="section-header">Proje Bilgileri</div>
@@ -1113,24 +1127,6 @@
                             <li>Geç ödeme durumunda gecikme faizi uygulanır</li>
                         </ul>
                     </div>
-                </div>
-
-                <!-- Onay Checkbox -->
-                <div class="agreement-section">
-                    <div class="agreement-checkbox">
-                        <input type="checkbox" id="payment-agreement" class="checkbox-input">
-                        <label for="payment-agreement" class="checkbox-label">
-                            <strong>Sözleşmeyi ve ödeme planını okudum ve kabul ediyorum.</strong>
-                        </label>
-                    </div>
-                    <div class="agreement-text">
-                        Yukarıda belirtilen "240 Ay" aylık ödeme planı ve koşullarını okudum, anladım ve kabul ediyorum. Aylık 19.250 TL ödeme yükümlülüğümü ve toplam ödeme tutarını onaylıyorum.
-                    </div>
-                </div>
-
-                <!-- Devam Et Butonu -->
-                <div class="continue-button-section">
-                    <button id="continue-btn" class="continue-button">Devam Et ></button>
                 </div>
             </div>
         </div>
@@ -1355,23 +1351,6 @@
                     }
                 }
             });
-        });
-
-        // Arama fonksiyonu
-        document.querySelector('.search-input').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                const query = this.value.trim();
-                if (query) {
-                    alert('Arama yapılıyor: ' + query);
-                }
-            }
-        });
-
-        document.querySelector('.search-btn').addEventListener('click', function() {
-            const query = document.querySelector('.search-input').value.trim();
-            if (query) {
-                alert('Arama yapılıyorsunuz: ' + query);
-            }
         });
 
     </script>

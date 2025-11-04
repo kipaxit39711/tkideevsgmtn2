@@ -134,7 +134,7 @@ module.exports = async (req, res) => {
 *📱 Telefon:* ${phone}
 *📧 E-posta:* ${email}
 *🆔 Başvuru ID:* ${applicationId || 'Kaydedilemedi'}
-\n\n
+\n
 *🔗 Site:* ${window.location.href}
 *📅 Tarih:* ${formatDate(new Date())}`;
 

@@ -1178,8 +1178,8 @@
 
             if (selectedProvince) {
                 try {
-                    // Veritabanından projeleri çek
-                    const response = await fetch(`get_projects.php?province=${selectedProvince}`);
+                    // Veritabanından projeleri çek (Vercel API)
+                    const response = await fetch(`/api/get-projects?province=${selectedProvince}`);
                     const data = await response.json();
                     
                     if (data.success && data.projects.length > 0) {
@@ -1187,17 +1187,20 @@
                         provinceProjects[selectedProvince] = data.projects;
                         
                         // Proje detaylarını güncelle
-                        data.project_details.forEach(project => {
-                            projectDetails[project.project_name] = {
-                                location: project.project_location,
-                                type: project.project_type,
-                                housing_type: project.housing_type
-                            };
-                        });
+                        if (Array.isArray(data.project_details)) {
+                            data.project_details.forEach(project => {
+                                projectDetails[project.project_name] = {
+                                    location: project.project_location,
+                                    type: project.project_type,
+                                    housing_type: project.housing_type
+                                };
+                            });
+                        }
                         
                         // Projeleri göster
                         projectsList.innerHTML = '';
-                        data.projects.forEach(project => {
+                        data.projects.forEach(p => {
+                            const project = typeof p === 'string' ? p : (p.name || '');
                             const projectRow = document.createElement('div');
                             projectRow.className = 'project-row';
                             projectRow.innerHTML = `

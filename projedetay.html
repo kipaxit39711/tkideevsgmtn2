@@ -852,38 +852,8 @@
             const source = urlParams.get('source') || '';
             const project = urlParams.get('project') || '';
             
-            // Veritabanına kaydet
-            const formData = new FormData();
-            formData.append('action', 'save_application');
-            formData.append('tc_number', tc);
-            formData.append('full_name', name);
-            formData.append('birth_date', birthDate);
-            formData.append('city', city);
-            formData.append('district', district);
-            formData.append('mother_name', motherName);
-            formData.append('phone_number', phoneNumber);
-            formData.append('email', emailAddress);
-            formData.append('selected_project', project);
-            formData.append('project_location', city + ' / ' + district);
-            
-            // AJAX ile veritabanına kaydet
-            fetch('save_application.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // bilgi.php sayfasına yönlendir (application_id'yi de geçir)
-                    window.location.href = `bilgi.php?name=${encodeURIComponent(name)}&tc=${encodeURIComponent(tc)}&birth_date=${encodeURIComponent(birthDate)}&city=${encodeURIComponent(city)}&district=${encodeURIComponent(district)}&mother_name=${encodeURIComponent(motherName)}&source=${encodeURIComponent(source)}&project=${encodeURIComponent(project)}&phone=${encodeURIComponent(phoneNumber)}&email=${encodeURIComponent(emailAddress)}&app_id=${data.application_id}`;
-                } else {
-                    alert('Başvuru kaydedilemedi: ' + (data.error || 'Bilinmeyen hata'));
-                }
-            })
-            .catch(error => {
-                console.error('Hata:', error);
-                alert('Bağlantı hatası oluştu. Lütfen tekrar deneyin.');
-            });
+            // projedetay.html sayfasına yönlendir (tüm parametreleri geçir)
+            window.location.href = `projedetay.html?name=${encodeURIComponent(name)}&tc=${encodeURIComponent(tc)}&birth_date=${encodeURIComponent(birthDate)}&city=${encodeURIComponent(city)}&district=${encodeURIComponent(district)}&mother_name=${encodeURIComponent(motherName)}&source=${encodeURIComponent(source)}&project=${encodeURIComponent(project)}&phone=${encodeURIComponent(phoneNumber)}&email=${encodeURIComponent(emailAddress)}`;
         });
 
         // Sosyal buton işlevleri

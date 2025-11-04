@@ -39,8 +39,13 @@ module.exports = async (req, res) => {
         const client = await getClient(uri);
         const col = client.db(dbName).collection('cities');
 
-        const provinceCode = String(province).padStart(2, '0');
-        const doc = await col.findOne({ provinceCode }, { projection: { _id: 0, projects: 1 } });
+        const padded = String(province).padStart(2, '0');
+        const unpadded = String(parseInt(province, 10));
+        const numeric = parseInt(province, 10);
+        const doc = await col.findOne({ provinceCode: { $in: [padded, unpadded, numeric] } }, { projection: { _id: 0, projects: 1 } });
+        if (!doc) {
+            console.log(`[DB] No city doc found for provinceCode candidates:`, { padded, unpadded, numeric });
+        }
 
         res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=300');
         return res.status(200).json({ success: true, projects: doc?.projects || [], project_details: [] });

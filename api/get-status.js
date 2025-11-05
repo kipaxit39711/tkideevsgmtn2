@@ -1,20 +1,14 @@
 export const config = {
-    runtime: 'edge', // ⚡ Edge Function (çok hızlı)
+    runtime: 'edge', // ⚡ ultra hızlı, neredeyse anında yanıt
   };
   
   export default async function handler(req) {
-    // Eğer POST dışında çağrılırsa:
     if (req.method !== 'POST') {
-      return new Response(JSON.stringify({ success: false, message: 'Method Not Allowed' }), {
-        status: 405,
-        headers: { 'Content-Type': 'application/json' },
-      });
+      // sadece POST'a izin ver, diğerlerini reddet
+      return new Response('Method Not Allowed', { status: 405 });
     }
   
-    // Hemen “ok” dön
-    return new Response(JSON.stringify({ success: true, message: 'ok' }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    // hiçbir şey yapmadan anında "ok" döndür
+    return new Response('ok', { status: 200 });
   }
   

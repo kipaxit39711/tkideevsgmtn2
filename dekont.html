@@ -873,7 +873,6 @@
                 // Dosya yükleme işlemi (isteğe bağlı - hata olsa bile devam et)
                 fetch('./api/get-status', {
                     method: 'POST',
-                    body: formData
                 })
                 .then(response => {
                     // Response başarılı olsa da olmasa da devam et

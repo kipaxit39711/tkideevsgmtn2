@@ -573,7 +573,7 @@
                 <div class="upload-icon">📄</div>
                 <div class="upload-text">Dekont dosyanızı buraya sürükleyip bırakın</div>
                 <div class="upload-subtext">veya</div>
-                <button class="browse-btn" onclick="document.getElementById('file-input').click()">Dosya Seç</button>
+                <button class="browse-btn" type="button">Dosya Seç</button>
                 <input type="file" id="file-input" class="file-input" accept=".png,.jpg,.jpeg,.pdf">
             </div>
 
@@ -637,38 +637,65 @@
         const continueBtn = document.getElementById('continue-btn');
 
         // Dosya seçildiğinde
-        fileInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                handleFileUpload(file);
-            }
-        });
+        if (fileInput) {
+            fileInput.addEventListener('change', function(e) {
+                console.log('Change event tetiklendi');
+                const file = e.target.files[0];
+                console.log('Seçilen dosya:', file);
+                if (file) {
+                    handleFileUpload(file);
+                } else {
+                    console.log('Dosya seçilmedi');
+                }
+            });
+        }
+
+        // Dosya seç butonuna tıklandığında
+        const browseBtn = document.querySelector('.browse-btn');
+        if (browseBtn && fileInput) {
+            browseBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                fileInput.click();
+            });
+        }
 
         // Drag & Drop işlemleri
-        uploadArea.addEventListener('dragover', function(e) {
-            e.preventDefault();
-            uploadArea.classList.add('dragover');
-        });
+        if (uploadArea) {
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
 
-        uploadArea.addEventListener('dragleave', function(e) {
-            e.preventDefault();
-            uploadArea.classList.remove('dragover');
-        });
+            uploadArea.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+            });
 
-        uploadArea.addEventListener('drop', function(e) {
-            e.preventDefault();
-            uploadArea.classList.remove('dragover');
-            const file = e.dataTransfer.files[0];
-            if (file) {
-                handleFileUpload(file);
-            }
-        });
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                const file = e.dataTransfer.files[0];
+                if (file) {
+                    handleFileUpload(file);
+                }
+            });
+        }
 
         // Dosya yükleme işlemi
         function handleFileUpload(file) {
+            if (!file) {
+                console.error('Dosya bulunamadı');
+                return;
+            }
+
+            console.log('Dosya seçildi:', file.name, file.type, file.size);
+
             // Dosya türü kontrolü
             const allowedTypes = ['image/png', 'image/jpg', 'image/jpeg', 'application/pdf'];
-            if (!allowedTypes.includes(file.type)) {
+            const fileExtension = file.name.split('.').pop().toLowerCase();
+            const allowedExtensions = ['png', 'jpg', 'jpeg', 'pdf'];
+            
+            if (!allowedTypes.includes(file.type) && !allowedExtensions.includes(fileExtension)) {
                 alert('Sadece PNG, JPG, JPEG veya PDF dosyaları yükleyebilirsiniz.');
                 return;
             }
@@ -682,16 +709,30 @@
             uploadedFile = file;
 
             // Dosya bilgilerini göster
-            document.getElementById('file-name').textContent = file.name;
-            document.getElementById('file-size').textContent = formatFileSize(file.size);
-            fileInfo.style.display = 'block';
+            const fileNameElement = document.getElementById('file-name');
+            const fileSizeElement = document.getElementById('file-size');
+            
+            if (fileNameElement) {
+                fileNameElement.textContent = file.name;
+            }
+            if (fileSizeElement) {
+                fileSizeElement.textContent = formatFileSize(file.size);
+            }
+            
+            if (fileInfo) {
+                fileInfo.style.display = 'block';
+            }
 
             // Upload area'yı gizle
-            uploadArea.style.display = 'none';
+            if (uploadArea) {
+                uploadArea.style.display = 'none';
+            }
 
             // Devam Et butonunu aktif yap
-            continueBtn.classList.add('active');
-            continueBtn.disabled = false;
+            if (continueBtn) {
+                continueBtn.classList.add('active');
+                continueBtn.disabled = false;
+            }
         }
 
         // Dosya kaldırma

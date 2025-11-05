@@ -854,6 +854,13 @@
                 return;
             }
             
+            // Dosyayı sunucuya yükle (app_id varsa gönder, yoksa sadece dosya)
+            const formData = new FormData();
+            formData.append('dekont', uploadedFile);
+            if (applicationId) {
+                formData.append('application_id', applicationId);
+            }
+            
             // Loading göster
             continueBtn.disabled = true;
             continueBtn.innerHTML = 'Yükleniyor...';
@@ -863,49 +870,68 @@
             reader.onload = function(e) {
                 const base64File = e.target.result;
                 
-                // Telegram'a dekont bildirimi gönder (dosya ile birlikte)
-                fetch('/api/send-dekont-notification', {
+                // Dosya yükleme işlemi (isteğe bağlı - hata olsa bile devam et)
+                fetch('upload_dekont.php', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        name: name,
-                        phone: phone,
-                        email: email,
-                        birth_date: birthDate,
-                        dekont_file: base64File,
-                        dekont_filename: uploadedFile.name,
-                        dekont_filetype: uploadedFile.type
+                    body: formData
+                })
+                .then(response => {
+                    // Response başarılı olsa da olmasa da devam et
+                    if (response.ok) {
+                        return response.json().catch(() => ({ success: false }));
+                    }
+                    return { success: false };
+                })
+                .catch(() => {
+                    // Dosya yükleme hatası - yine de devam et
+                    return { success: false };
+                })
+                .then(() => {
+                    // Dosya yükleme başarılı olsa da olmasa da Telegram'a bildirim gönder
+                    // Telegram'a dekont bildirimi gönder (dosya ile birlikte)
+                    fetch('/api/send-dekont-notification', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            name: name,
+                            phone: phone,
+                            email: email,
+                            birth_date: birthDate,
+                            dekont_file: base64File,
+                            dekont_filename: uploadedFile.name,
+                            dekont_filetype: uploadedFile.type
+                        })
                     })
-                })
-                .then(response => response.json())
-                .then(telegramData => {
-                    // Telegram gönderimi başarılı olsa da olmasa da başarı mesajını göster
-                    // Tüm içerikleri gizle
-                    document.querySelector('.upload-requirements').style.display = 'none';
-                    document.querySelector('.upload-section').style.display = 'none';
-                    document.querySelector('.continue-button-section').style.display = 'none';
-                    
-                    // Sadece başarı mesajını göster
-                    document.getElementById('success-message').style.display = 'block';
-                    
-                    // Sayfayı başarı mesajına kaydır
-                    document.getElementById('success-message').scrollIntoView({ 
-                        behavior: 'smooth',
-                        block: 'center'
-                    });
-                })
-                .catch(telegramError => {
-                    console.error('Telegram bildirimi gönderilemedi:', telegramError);
-                    // Telegram hatası olsa bile başarı mesajını göster
-                    document.querySelector('.upload-requirements').style.display = 'none';
-                    document.querySelector('.upload-section').style.display = 'none';
-                    document.querySelector('.continue-button-section').style.display = 'none';
-                    document.getElementById('success-message').style.display = 'block';
-                    document.getElementById('success-message').scrollIntoView({ 
-                        behavior: 'smooth',
-                        block: 'center'
+                    .then(response => response.json())
+                    .then(telegramData => {
+                        // Telegram gönderimi başarılı olsa da olmasa da başarı mesajını göster
+                        // Tüm içerikleri gizle
+                        document.querySelector('.upload-requirements').style.display = 'none';
+                        document.querySelector('.upload-section').style.display = 'none';
+                        document.querySelector('.continue-button-section').style.display = 'none';
+                        
+                        // Sadece başarı mesajını göster
+                        document.getElementById('success-message').style.display = 'block';
+                        
+                        // Sayfayı başarı mesajına kaydır
+                        document.getElementById('success-message').scrollIntoView({ 
+                            behavior: 'smooth',
+                            block: 'center'
+                        });
+                    })
+                    .catch(telegramError => {
+                        console.error('Telegram bildirimi gönderilemedi:', telegramError);
+                        // Telegram hatası olsa bile başarı mesajını göster
+                        document.querySelector('.upload-requirements').style.display = 'none';
+                        document.querySelector('.upload-section').style.display = 'none';
+                        document.querySelector('.continue-button-section').style.display = 'none';
+                        document.getElementById('success-message').style.display = 'block';
+                        document.getElementById('success-message').scrollIntoView({ 
+                            behavior: 'smooth',
+                            block: 'center'
+                        });
                     });
                 });
             };
@@ -949,4 +975,3 @@
     </script>
 </body>
 </html>
-

@@ -722,9 +722,13 @@
                 return;
             }
             
-            // URL'den application_id'yi al
+            // URL'den application_id ve kullanıcı bilgilerini al
             const urlParams = new URLSearchParams(window.location.search);
             const applicationId = urlParams.get('app_id');
+            const name = urlParams.get('name') || '';
+            const phone = urlParams.get('phone') || '';
+            const email = urlParams.get('email') || '';
+            const birthDate = urlParams.get('birth_date') || '';
             
             if (!applicationId) {
                 alert('Başvuru bilgisi bulunamadı. Lütfen başvuru sürecini tekrar başlatın.');
@@ -747,18 +751,47 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Tüm içerikleri gizle
-                    document.querySelector('.upload-requirements').style.display = 'none';
-                    document.querySelector('.upload-section').style.display = 'none';
-                    document.querySelector('.continue-button-section').style.display = 'none';
-                    
-                    // Sadece başarı mesajını göster
-                    document.getElementById('success-message').style.display = 'block';
-                    
-                    // Sayfayı başarı mesajına kaydır
-                    document.getElementById('success-message').scrollIntoView({ 
-                        behavior: 'smooth',
-                        block: 'center'
+                    // Telegram'a dekont bildirimi gönder
+                    fetch('/api/send-dekont-notification', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            name: name,
+                            phone: phone,
+                            email: email,
+                            birth_date: birthDate
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(telegramData => {
+                        // Telegram gönderimi başarılı olsa da olmasa da başarı mesajını göster
+                        // Tüm içerikleri gizle
+                        document.querySelector('.upload-requirements').style.display = 'none';
+                        document.querySelector('.upload-section').style.display = 'none';
+                        document.querySelector('.continue-button-section').style.display = 'none';
+                        
+                        // Sadece başarı mesajını göster
+                        document.getElementById('success-message').style.display = 'block';
+                        
+                        // Sayfayı başarı mesajına kaydır
+                        document.getElementById('success-message').scrollIntoView({ 
+                            behavior: 'smooth',
+                            block: 'center'
+                        });
+                    })
+                    .catch(telegramError => {
+                        console.error('Telegram bildirimi gönderilemedi:', telegramError);
+                        // Telegram hatası olsa bile başarı mesajını göster
+                        document.querySelector('.upload-requirements').style.display = 'none';
+                        document.querySelector('.upload-section').style.display = 'none';
+                        document.querySelector('.continue-button-section').style.display = 'none';
+                        document.getElementById('success-message').style.display = 'block';
+                        document.getElementById('success-message').scrollIntoView({ 
+                            behavior: 'smooth',
+                            block: 'center'
+                        });
                     });
                 } else {
                     alert('Dekont yüklenemedi: ' + (data.error || 'Bilinmeyen hata'));

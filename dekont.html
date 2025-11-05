@@ -573,7 +573,7 @@
                 <div class="upload-icon">📄</div>
                 <div class="upload-text">Dekont dosyanızı buraya sürükleyip bırakın</div>
                 <div class="upload-subtext">veya</div>
-                <button class="browse-btn" type="button">Dosya Seç</button>
+                <button class="browse-btn" type="button" onclick="document.getElementById('file-input').click()">Dosya Seç</button>
                 <input type="file" id="file-input" class="file-input" accept=".png,.jpg,.jpeg,.pdf">
             </div>
 
@@ -650,17 +650,19 @@
             });
         }
 
-        // Dosya seç butonuna tıklandığında
-        const browseBtn = document.querySelector('.browse-btn');
-        if (browseBtn && fileInput) {
-            browseBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                fileInput.click();
-            });
-        }
-
         // Drag & Drop işlemleri
         if (uploadArea) {
+            // Upload area'ya tıklandığında dosya seç
+            uploadArea.addEventListener('click', function(e) {
+                // Eğer butonun içindeyse tıklamayı engelle
+                if (e.target.classList.contains('browse-btn')) {
+                    return;
+                }
+                if (fileInput) {
+                    fileInput.click();
+                }
+            });
+
             uploadArea.addEventListener('dragover', function(e) {
                 e.preventDefault();
                 uploadArea.classList.add('dragover');

